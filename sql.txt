@@ -1,0 +1,135 @@
+// DROP ALL TABLES
+drop table CreditCard;
+drop table Comments;
+drop table User_topic_subscr;
+drop table Video_topic_linking;
+drop table Topic;
+drop table Video;
+drop table ContentCreator;
+drop table Browser_User;
+
+// CREATE TABLES
+
+create table Browser_User (
+	user_id number PRIMARY KEY,
+	first_name varchar(10) NOT NULL,
+	middle_name varchar(10) NULL,
+	last_name varchar(10) NOT NULL,
+	birthdate Date,
+	email varchar(30) UNIQUE,
+	CC_flag char(1) DEFAULT 'N'
+);
+
+create table ContentCreator(
+	ContentCreator_id number NOT NULL PRIMARY KEY,
+	user_id number NOT NULL,
+	username varchar(10) UNIQUE,
+	street_address varchar(40),
+	city varchar(20),
+	state char(2),
+	zip_code char(6),
+	state_residence varchar(20),
+	country_res varchar(20),
+	mobile char(12),
+	tier_level varchar(20),
+	FOREIGN KEY (user_id) REFERENCES Browser_User(user_id)
+);
+
+create table CreditCard(
+	card_id number NOT NULL PRIMARY KEY,
+	ContentCreator_id number NOT NULL,
+	card_type varchar(15),
+	card_num number,
+	exp_date Date,
+	CC_ID number,
+	street_billing varchar(20),
+	zip_code_billing varchar(10),
+	FOREIGN KEY (ContentCreator_id) REFERENCES ContentCreator(ContentCreator_id)
+);
+
+create table Video(
+video_id number NOT NULL PRIMARY KEY,
+ContentCreator_id number,
+title varchar(20),
+subtitle varchar(20),
+upload_date Date,
+video_length varchar(10),
+video_size varchar(10),
+views number DEFAULT 0,
+likes number DEFAULT 0,
+revenue number DEFAULT 0,
+FOREIGN KEY (ContentCreator_id) REFERENCES ContentCreator(ContentCreator_id)
+);
+
+create table Comments(
+comment_id number NOT NULL PRIMARY KEY,
+video_id number,
+user_id number,
+time_date Date,
+comment_body varchar(20),
+FOREIGN KEY (video_id) REFERENCES Video(video_id),
+FOREIGN KEY (user_id) REFERENCES Browser_User(user_id)
+);
+
+create table Topic(
+	topic_id number NOT NULL PRIMARY KEY,
+	topic_name varchar(20),
+	topic_desc varchar(30)
+);
+
+create table User_topic_subscr(
+	user_id number NOT NULL,
+	topic_id number NOT NULL,
+	PRIMARY KEY (user_id,topic_id),
+	FOREIGN KEY (topic_id) REFERENCES Topic(topic_id),
+	FOREIGN KEY (user_id) REFERENCES Browser_User(user_id)
+);
+
+create table Video_topic_linking(
+	video_id number NOT NULL,
+	topic_id number NOT NULL,
+	PRIMARY KEY (video_id,topic_id),
+	FOREIGN KEY (video_id) REFERENCES Video(video_id),
+	FOREIGN KEY (topic_id) REFERENCES Topic(topic_id)
+);
+
+// INSERT DATA INTO TABLES
+
+insert into Browser_User values ((select nvl(max(user_id),1000)+1 from Browser_User),'raj',
+'aditya','singh',sysdate,'raj@gmail.com','N');
+
+insert into ContentCreator values((select nvl(max(ContentCreator_id),10000)+1 from ContentCreator),'1001','raj123',
+'at-bisahi','sheohar','br','843334','bihar','india','9898989898','middle');
+
+insert into CreditCard values((select nvl(max(card_id),100000)+1 from CreditCard),'10001','master',7878787878787878,
+sysdate,123,'axyz','78887767');
+
+insert into Video values((select nvl(max(video_id),1000000)+1 from Video),10001,
+'abc','axyx',sysdate,'100mb','100mb',2,3,3);
+
+insert into Comments values((select nvl(max(comment_id),10000000)+1 from Comments),1000001,1001,
+sysdate,'asdkflk');
+
+insert into Topic values((select nvl(max(topic_id),100000000)+1 from Topic),'game','lksdflkj');
+
+insert into User_topic_subscr values(1001,100000001);
+
+insert into Video_topic_linking values(1000001,100000001);
+
+//SELECT DATA FROM ALL TABLES
+
+SELECT * FROM Browser_User;
+
+SELECT * FROM ContentCreator;
+
+SELECT * FROM CreditCard;
+
+SELECT * FROM Video;
+
+SELECT * FROM Comments;
+
+SELECT * FROM Topic;
+
+SELECT * FROM User_topic_subscr;
+
+SELECT * FROM Video_topic_linking;
